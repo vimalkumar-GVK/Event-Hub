@@ -14,14 +14,25 @@ window.SmartCampus = window.SmartCampus || {};
         if (body) options.body = JSON.stringify(body);
 
         try {
+            console.log(`API Request: ${method} ${API_BASE}${endpoint}`);
             const response = await fetch(`${API_BASE}${endpoint}`, options);
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.detail || 'API Request failed');
+                let errorDetail = 'API Request failed';
+                try {
+                    const error = await response.json();
+                    errorDetail = error.detail || error.message || errorDetail;
+                } catch (e) {
+                    errorDetail = `HTTP ${response.status}: ${response.statusText}`;
+                }
+                throw new Error(errorDetail);
             }
             return await response.json();
         } catch (error) {
             console.error(`API Error (${endpoint}):`, error);
+            // If it's a TypeError, it's likely a network error (CORS, 404, etc.)
+            if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                console.error('Network Error: Check if the API server is running and the URL is correct.');
+            }
             throw error;
         }
     }

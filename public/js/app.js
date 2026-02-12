@@ -3,6 +3,27 @@
     const appContainer = document.getElementById('app');
     const modalContainer = document.getElementById('modal-container');
 
+    // --- GLOBAL ERROR HANDLING ---
+    window.addEventListener('error', (event) => {
+        console.error('Global JS Error:', event.error);
+        if (appContainer && !appContainer.innerHTML.trim()) {
+            appContainer.innerHTML = `
+                <div style="padding: 2rem; text-align: center; color: #ef4444; font-family: sans-serif;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h2>Application Error</h2>
+                    <p>${event.message}</p>
+                    <button onclick="location.reload()" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 1rem;">Retry</button>
+                </div>
+            `;
+        }
+    });
+
+    if (!Data) {
+        console.error('Critical: Data module not loaded!');
+        appContainer.innerHTML = '<div style="padding: 2rem; text-align: center;">Error: Data module failed to load. Please check your internet connection or console for details.</div>';
+        return;
+    }
+
     // --- UTILITIES ---
     window.compressImage = (file, maxWidth = 800, quality = 0.7) => {
         return new Promise((resolve, reject) => {
@@ -3956,24 +3977,54 @@
     // --- ROUTER ---
     // --- ROUTER ---
     async function handleRoute() {
-        // Cleanup Scanner if running
-        if (window.html5QrcodeScanner) {
-            try {
-                window.stopQRScanner();
-            } catch (e) { console.log('Scanner cleanup error:', e); }
+        // Show loading state
+        const appContainer = document.getElementById('app'); // Assuming appContainer exists
+        if (appContainer) {
+            appContainer.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; font-family: 'Outfit', sans-serif;">
+                <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #6366f1; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <p style="margin-top: 1rem; color: #64748b;">Loading Smart Campus...</p>
+                <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+            </div>
+        `;
         }
 
-        const hash = window.location.hash || '#';
-        const parts = hash.split('/');
-        const mainRoute = parts[0];
-        const subRoute = parts[1] || 'overview';
+        try {
+            // Cleanup Scanner if running
+            if (window.html5QrcodeScanner) {
+                try {
+                    window.stopQRScanner();
+                } catch (e) { console.log('Scanner cleanup error:', e); }
+            }
 
-        if (mainRoute === '#') await renderLanding();
-        else if (mainRoute === '#login') renderLogin();
-        else if (mainRoute === '#student') await renderStudentDashboard(subRoute);
-        else if (mainRoute === '#admin') await renderAdminDashboard(subRoute);
-        else if (mainRoute === '#super') await renderSuperDashboard(subRoute);
-        else await renderLanding();
+            const hash = window.location.hash || '#';
+            const parts = hash.split('/');
+            const mainRoute = parts[0];
+            const subRoute = parts[1] || 'overview';
+
+            if (mainRoute === '#') await renderLanding();
+            else if (mainRoute === '#login') renderLogin();
+            else if (mainRoute === '#student') await renderStudentDashboard(subRoute);
+            else if (mainRoute === '#admin') await renderAdminDashboard(subRoute);
+            else if (mainRoute === '#super') await renderSuperDashboard(subRoute);
+            else await renderLanding();
+        } catch (e) {
+            console.error('Routing Error:', e);
+            const appContainer = document.getElementById('app');
+            if (appContainer) {
+                appContainer.innerHTML = `
+                <div style="padding: 2rem; text-align: center; color: #ef4444; font-family: sans-serif;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h2>Oops! Something went wrong</h2>
+                    <p style="color: #64748b; max-width: 400px; margin: 0 auto;">${e.message || 'Failed to load page'}</p>
+                    <div style="margin-top: 2rem; background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: left; font-family: monospace; font-size: 0.8rem; overflow-x: auto;">
+                        ${e.stack ? e.stack.split('\n').slice(0, 3).join('<br>') : ''}
+                    </div>
+                    <button onclick="location.hash='#'; location.reload();" class="btn btn-primary" style="margin-top: 2rem;">Back to Home</button>
+                </div>
+            `;
+            }
+        }
     }
     window.handleRoute = handleRoute;
 
