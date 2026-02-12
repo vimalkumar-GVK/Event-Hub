@@ -42,20 +42,27 @@ app.add_middleware(
 )
 
 # Serving Frontend Static Files
-# Assuming this file is in functions/ directory, PARENT_DIR should be one level up
-PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Assuming this file is in functions/ directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PARENT_DIR = os.path.dirname(BASE_DIR)
+# We moved static files to 'public' for Netlify
+STATIC_DIR = os.path.join(PARENT_DIR, "public")
 
 # Mount CSS, JS, and Assets folders
-if os.path.exists(os.path.join(PARENT_DIR, "css")):
-    app.mount("/css", StaticFiles(directory=os.path.join(PARENT_DIR, "css")), name="css")
-if os.path.exists(os.path.join(PARENT_DIR, "js")):
-    app.mount("/js", StaticFiles(directory=os.path.join(PARENT_DIR, "js")), name="js")
-if os.path.exists(os.path.join(PARENT_DIR, "assets")):
-    app.mount("/assets", StaticFiles(directory=os.path.join(PARENT_DIR, "assets")), name="assets")
+if os.path.exists(os.path.join(STATIC_DIR, "css")):
+    app.mount("/css", StaticFiles(directory=os.path.join(STATIC_DIR, "css")), name="css")
+if os.path.exists(os.path.join(STATIC_DIR, "js")):
+    app.mount("/js", StaticFiles(directory=os.path.join(STATIC_DIR, "js")), name="js")
+if os.path.exists(os.path.join(STATIC_DIR, "assets")):
+    app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="assets")
 
 @app.get("/")
 async def read_index():
-    return FileResponse(os.path.join(PARENT_DIR, 'index.html'))
+    # Primary for local development
+    index_path = os.path.join(STATIC_DIR, 'index.html')
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Smart Campus API is Running. Frontend not found in functions context."}
 
 # --- ROUTES ---
 
