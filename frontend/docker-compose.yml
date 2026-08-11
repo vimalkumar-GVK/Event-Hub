@@ -1,0 +1,34 @@
+version: '3.8'
+
+# ============================================================
+# FRONTEND DEPLOYMENT
+# Deploy this independently of the backend.
+#
+# Usage:
+#   cd frontend/
+#   cp .env.example .env        # fill in your values
+#   docker compose up -d --build
+#
+# The app will be available at http://<host>:3000
+#
+# The nginx container proxies /api and /ws to the backend URL
+# set via NGINX_BACKEND_URL.  No CORS changes needed on the
+# backend as long as you keep the proxy approach.
+# ============================================================
+
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        # Set to empty string when using the nginx proxy (recommended).
+        # Set to the full backend URL (e.g. https://api.example.com)
+        # only if you want the browser to call the backend directly.
+        VITE_API_URL: ${VITE_API_URL:-}
+    ports:
+      - "3000:80"
+    environment:
+      # URL the nginx proxy forwards /api and /ws requests to.
+      # Must be reachable from inside the container (docker network or public URL).
+      - NGINX_BACKEND_URL=${NGINX_BACKEND_URL:-http://localhost:8000}
+    restart: unless-stopped

@@ -1,0 +1,52 @@
+version: '3.8'
+
+# ============================================================
+# BACKEND DEPLOYMENT
+# Deploy this independently of the frontend.
+#
+# Usage:
+#   cd backend/
+#   cp .env.example .env        # fill in your values
+#   docker compose up -d
+#
+# The API will be available at http://<host>:8000
+# ============================================================
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - backend-net
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-campusdb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - backend-net
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    networks:
+      - backend-net
+
+networks:
+  backend-net:
+    driver: bridge
+
+volumes:
+  postgres_data:

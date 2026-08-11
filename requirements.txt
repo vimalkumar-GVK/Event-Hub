@@ -1,0 +1,12 @@
+flask
+flask-cors
+flask-sock
+pymongo
+python-dotenv
+pydantic
+passlib[bcrypt]
+python-jose[cryptography]
+twilio
+reportlab
+qrcode[pil]
+cryptography

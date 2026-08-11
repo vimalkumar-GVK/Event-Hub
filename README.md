@@ -36,25 +36,26 @@ A centralized digital solution for managing campus events end-to-end. This appli
 ## 🚀 Tech Stack
 
 ### Frontend
-- **HTML5, CSS3, Vanilla JavaScript** - Zero framework dependencies
-- **Single Page Application (SPA)** - Fast and responsive
-- **Font Awesome** - Icon library
-- **Google Fonts (Outfit)** - Modern typography
-- **QR Code Libraries** - html5-qrcode, qrcode.js
+- **React (v19)** with **Vite** & **TypeScript**
+- **Tailwind CSS** for styling
+- **Zustand** for state management
+- **React Router Dom** for routing
+- **Framer Motion** for animations
+- **Lucide React** for icons
+- **html5-qrcode** for attendance tracking
 
 ### Backend
 - **Python 3.8+**
-- **FastAPI** - Modern, fast web framework
-- **SQLAlchemy** - ORM for database operations
-- **PostgreSQL** - Production database (SQLite for development)
-- **Uvicorn** - ASGI server
-- **Pydantic** - Data validation
+- **Flask** with **flask-cors** & **flask-sock**
+- **PyMongo** & **mongomock** (in-memory MongoDB fallback)
+- **Pydantic** for validation
+- **python-jose** & **passlib** for JWT auth & password hashing
 
 ## 📋 Prerequisites
 
 - **Python 3.8 or higher**
-- **pip** (Python package manager)
-- **PostgreSQL** (for production) or SQLite (for development)
+- **Bun** (recommended) or Node.js (for frontend)
+- **MongoDB** (optional, defaults to mongomock in-memory database)
 
 ## 🛠️ Installation & Setup
 
@@ -65,64 +66,49 @@ cd smart-campus-events
 
 ### 2. Set Up Python Backend
 
-#### Install Dependencies
+#### Install Dependencies & Run Backend
+Using your python interpreter:
 ```bash
-sudo apt update
-sudo apt install python3-pip python3-venv
-
 cd backend
 pip install -r requirements.txt
+python -m app.main
 ```
+The backend server runs at `http://localhost:8000`.
 
-#### Configure Environment Variables
-Create a `.env` file in the `backend` directory:
-```env
-DATABASE_URL=sqlite:///./test.db
-# For PostgreSQL in production:
-# DATABASE_URL=postgresql://user:password@localhost/dbname
-```
+### 3. Set Up React Frontend
 
-#### Initialize Database
+#### Install Dependencies & Run Frontend
+Using Bun (preferred) or npm:
 ```bash
-# Run migrations (if needed)
-python migrate_db.py
-
-# Seed admin users
-python seed_admin.py
+cd frontend
+bun install
+bun run dev
 ```
+The frontend dev server runs at `http://localhost:5173`.
 
-### 3. Run the Application
+The backend automatically proxies requests under `/api` and `/ws` to port 8000.
 
-#### Start the Backend Server
-```bash
-# From the backend directory
-python main.py
-
-# Or use uvicorn directly
-uvicorn main:app --reload --host 127.0.0.1 --port 8000
-```
-
-#### Access the Application
-Open your browser and navigate to:
-```
-http://localhost:8000
-```
-
-The FastAPI backend serves both the API and the frontend static files.
-
-## 🔐 Default Credentials
+## 🔐 Default Credentials (Auto-Seeded)
 
 ### Super Admin
 - **Email**: `super@smartcampus.edu`
 - **Password**: `super123`
 
-### Admin
-- **Email**: `admin@smartcampus.edu`
+### Admin (Rathinam College)
+- **Email**: `admin1@rathinam.edu`
 - **Password**: `admin123`
 
-### Student
-- **Email**: `john@student.edu`
-- **Password**: `user`
+### Sub Admin (Rathinam College)
+- **Email**: `sub1@rathinam.edu`
+- **Password**: `sub123`
+
+### Student 1 (Verified)
+- **Email**: `student1@rathinam.edu`
+- **Password**: `user123`
+
+### Student 2 (Unverified)
+- **Email**: `student2@rathinam.edu`
+- **Password**: `user123`
 
 > **Note**: Change these credentials in production!
 
@@ -130,23 +116,21 @@ The FastAPI backend serves both the API and the frontend static files.
 
 ```
 smart-campus-events/
-├── backend/          # Python FastAPI backend
-│   ├── main.py             # FastAPI application entry point
-│   ├── models.py           # SQLAlchemy database models
-│   ├── schemas.py          # Pydantic schemas for validation
-│   ├── database.py         # Database configuration
+├── backend/          # Python Flask backend
+│   ├── app/
+│   │   ├── main.py             # Flask application entry point
+│   │   ├── database.py         # MongoDB connection & fallback setup
+│   │   ├── auth.py             # JWT & Password helper functions
+│   │   ├── websocket_manager.py # Flask socket/websocket manager
+│   │   ├── schemas.py          # Pydantic validation schemas
 │   ├── requirements.txt    # Python dependencies
-│   ├── seed_admin.py       # Script to create admin users
-│   └── test.db             # SQLite database (development)
-├── js/
-│   ├── app.js              # Main application logic (SPA)
-│   └── data.js             # API client and data layer
-├── css/
-│   ├── styles.css          # Main stylesheet
-│   └── ott-styles.css      # Additional styles
-├── index.html              # Application entry point
-├── .analysis/              # Documentation and analysis
-└── README.md               # This file
+│   └── seed_admin.py       # Admin seeding script
+├── frontend/         # React Single Page Application (SPA)
+│   ├── src/                # React components & pages
+│   ├── package.json        # Frontend Node/Bun dependencies
+│   └── vite.config.ts      # Vite configuration with proxy API
+├── .analysis/        # Documentation and analysis
+└── README.md         # This file
 ```
 
 ## 🔌 API Endpoints
@@ -235,20 +219,62 @@ python check_db.py
 python list_users.py
 ```
 
-## 🚢 Production Deployment
+## 🚢 Deployment
 
-### Using Netlify (Recommended)
-1. Configure `netlify.toml` for serverless functions
-2. Deploy frontend to Netlify CDN
-3. Use Netlify Functions for API endpoints
+The project is split into independently deployable units. Each service has its own `docker-compose.yml`.
 
-### Traditional Hosting
-1. Set up PostgreSQL database
-2. Configure environment variables
-3. Run with production ASGI server:
+### Local Development (all-in-one)
+Starts backend, frontend, PostgreSQL, and Redis together:
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+docker compose -f docker-compose.dev.yml up --build
 ```
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+
+---
+
+### Deploy Backend Independently
+
+```bash
+cd backend/
+
+# 1. Configure environment
+cp .env.example .env
+# Edit .env — set SECRET_KEY, MONGO_URI, ALLOWED_ORIGINS, etc.
+
+# 2. Build & start
+docker compose up -d --build
+```
+The API is available at `http://<host>:8000`.
+
+---
+
+### Deploy Frontend Independently
+
+```bash
+cd frontend/
+
+# 1. Configure environment
+cp .env.example .env
+# Edit .env — set NGINX_BACKEND_URL to point at your backend
+
+# 2. Build & start
+docker compose up -d --build
+```
+The app is available at `http://<host>:3000`.
+
+The nginx container proxies `/api` and `/ws` requests to `NGINX_BACKEND_URL`
+(set in `frontend/.env`). No CORS changes are needed on the backend with this approach.
+
+#### Key environment variables
+
+| Variable | Where | Description |
+|---|---|---|
+| `NGINX_BACKEND_URL` | `frontend/.env` | Backend URL nginx proxies to (e.g. `http://api.example.com:8000`) |
+| `VITE_API_URL` | `frontend/.env` | *Optional* — only needed if calling backend directly from browser |
+| `ALLOWED_ORIGINS` | `backend/.env` | Comma-separated list of allowed frontend origins |
+| `SECRET_KEY` | `backend/.env` | JWT signing secret (use a long random string) |
+
 
 ## 📚 Documentation
 

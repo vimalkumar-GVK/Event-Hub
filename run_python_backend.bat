@@ -3,7 +3,7 @@ echo Installing Python dependencies...
 pip install -r backend/requirements.txt
 
 echo.
-echo Starting Python Backend Server...
+echo Starting Python Flask Backend Server...
 cd backend
-uvicorn main:app --reload
+python -m app.main
 pause

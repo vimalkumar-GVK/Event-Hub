@@ -1,0 +1,6 @@
+('admin', 'System Admin', 'admin@smartcampus.edu', 'admin123')
+('student', 'Vimal Kumar', 'vimalvimal6789v@gmail.com', 'gvkgvk')
+('subadmin', 'USHA DEVI M', 'ushadevi@rathinamcampus.edu', 'usha')
+('subadmin', 'Campus Sub-Admin', 'subadmin@campus.edu', 'subadmin')
+('subadmin', 'subadmin', 'subadmin@smartcampus.edu', 'subadmin123')
+('super', 'Super Admin', 'super@smartcampus.edu', 'super123')
