@@ -127,7 +127,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 // ─── Create Event form ────────────────────────────────────────────────────────
 const CreateEventForm = ({ onDone }: { onDone: () => void }) => {
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
   const qc = useQueryClient();
   const [form, setForm] = useState({
     title: '', description: '', date: '', time: '', venue: '', capacity: '', type: '', image: '', rules: '', payment_qr: '', sub_events: [] as any[]
