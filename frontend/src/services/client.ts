@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { useAuthStore } from '../context/authStore';
 
+// Use relative '/api' in production so Vercel rewrites handle it.
+// Only use VITE_API_URL for local development.
+const baseURL = import.meta.env.PROD ? '/api' : (import.meta.env.VITE_API_URL ?? '/api');
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
