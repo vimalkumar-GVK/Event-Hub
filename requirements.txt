@@ -1,7 +1,7 @@
 flask
 flask-cors
 flask-sock
-pymongo
+pymongo[srv]
 python-dotenv
 pydantic
 passlib[bcrypt]
