@@ -7,8 +7,8 @@ load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/smartcampus")
 
 try:
-    # Try connecting with a 2-second timeout
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2000)
+    # Try connecting with a 10-second timeout for serverless environments
+    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000)
     # Force a connection test
     client.admin.command('ping')
     try:

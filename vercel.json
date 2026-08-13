@@ -13,25 +13,22 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.py"
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
     },
     {
-      "src": "/uploads/(.*)",
-      "dest": "/api/index.py"
+      "source": "/uploads/(.*)",
+      "destination": "/api/index.py"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "source": "/(?!api/|uploads/)(.*\\..*)",
+      "destination": "/frontend/$1"
     },
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/index.html"
+      "source": "/(?!api/|uploads/)(.*)",
+      "destination": "/frontend/index.html"
     }
   ]
 }
