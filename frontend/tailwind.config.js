@@ -16,9 +16,9 @@ export default {
           500: '#64748b',
           600: '#475569',
           700: '#334155',
-          800: '#1a1f36',  // Deep rich violet/navy
-          900: '#111425',  // Midnight blue
-          950: '#0a0c16',  // Deepest background
+          800: '#1a1f36',
+          900: '#111425',
+          950: '#070A14', // requested dark theme background
         },
         primary: {
           50: '#f0f9ff',
@@ -26,13 +26,25 @@ export default {
           200: '#bae6fd',
           300: '#7dd3fc',
           400: '#38bdf8',
-          500: '#0ea5e9',
+          500: '#2A9DD4', // requested primary blue
           600: '#0284c7',
           700: '#0369a1',
           800: '#075985',
           900: '#0c4a6e',
         },
+        cyan: {
+          400: '#22D3EE', // requested cyan glow
+        }
       },
+      animation: {
+        'marquee': 'marquee 25s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        }
+      }
     },
   },
   plugins: [],
