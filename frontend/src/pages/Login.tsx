@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -76,9 +76,16 @@ const Login = () => {
   const [showForgot, setShowForgot] = useState(false);
 
   const navigate = useNavigate();
-  const setAuth  = useAuthStore((state) => state.setAuth);
+  const { token, role, setAuth } = useAuthStore();
   const active   = ROLES[activeIdx];
   const Icon     = active.icon;
+
+  // If already logged in, redirect to dashboard automatically
+  useEffect(() => {
+    if (token && role) {
+      navigate(ROLE_REDIRECTS[role] ?? '/', { replace: true });
+    }
+  }, [token, role, navigate]);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -108,7 +115,7 @@ const Login = () => {
       }
 
       setRedirectingAs(user.role);
-      setTimeout(() => navigate(ROLE_REDIRECTS[user.role] ?? '/'), 700);
+      setTimeout(() => navigate(ROLE_REDIRECTS[user.role] ?? '/', { replace: true }), 700);
 
     } catch (error: any) {
       const msg = error.response?.data?.detail;

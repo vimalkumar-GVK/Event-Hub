@@ -42,6 +42,26 @@ def srv_get_events(auth_header, inst_id, city):
         query["status"] = "published"
         query["approval_status"] = "approved"
         
+        # If the user is a student or faculty, also include events shared with their role, dept, or institution
+        if user:
+            role = user.get("role")
+            dept = user.get("department")
+            u_inst_id = user.get("institution_id")
+            
+            shared_conditions = []
+            if role: shared_conditions.append({"shared_with.role": role})
+            if dept: shared_conditions.append({"shared_with.department": dept})
+            if u_inst_id: shared_conditions.append({"shared_with.institutionId": u_inst_id})
+            
+            if shared_conditions:
+                # the query becomes: (original constraints) AND ( (published/approved) OR (shared matches) )
+                query.pop("status")
+                query.pop("approval_status")
+                query["$or"] = query.get("$or", []) + [
+                    {"status": "published", "approval_status": "approved"},
+                    {"$or": shared_conditions, "status": "shared"}
+                ]
+        
     events = list(db.events.find(query).sort("created_at", -1))
     for e in events:
         e["id"] = str(e.pop("_id"))
@@ -224,6 +244,23 @@ def srv_get_pending_events(current_user):
         e["id"] = str(e.pop("_id"))
     return events, 200
 
+def srv_get_approval_history(current_user):
+    db = get_db()
+    if current_user.get("role") not in ("admin", "super_admin"):
+        return {"detail": "Not authorized"}, 403
+    
+    query = {
+        "approval_status": "approved"
+    }
+    if current_user.get("role") == "admin":
+        query["institution_id"] = current_user.get("institution_id")
+        
+    events = list(db.events.find(query).sort("approved_at", -1))
+    for e in events:
+        e["id"] = str(e.pop("_id"))
+        _populate_event_creator(db, e)
+    return events, 200
+
 def srv_approve_event(event_id, current_user):
     db = get_db()
     if current_user.get("role") not in ("admin", "super_admin"):
@@ -258,6 +295,41 @@ def srv_approve_event(event_id, current_user):
     srv_create_notification(f"New event '{db_event.get('title')}' is now published!", event_id, "Admin", "info", target_role="student")
     
     return {"message": "Event approved successfully"}, 200
+
+def srv_share_event(event_id, current_user, share_data):
+    db = get_db()
+    if current_user.get("role") not in ("sub_admin", "admin", "super_admin"):
+        return {"detail": "Not authorized to share events"}, 403
+        
+    try:
+        db_event = db.events.find_one({"_id": ObjectId(event_id)})
+    except Exception:
+        return {"detail": "Invalid ID"}, 400
+        
+    if not db_event:
+        return {"detail": "Event not found"}, 404
+        
+    require_approval = share_data.get("requireApproval", False)
+    shared_with = []
+    
+    for r in share_data.get("shareWithRoles", []):
+        shared_with.append({"role": r})
+    for d in share_data.get("departments", []):
+        shared_with.append({"department": d})
+    for i in share_data.get("institutionIds", []):
+        shared_with.append({"institutionId": i})
+        
+    new_status = "pending_approval" if require_approval else "shared"
+    
+    db.events.update_one({"_id": ObjectId(event_id)}, {
+        "$set": {
+            "shared_with": shared_with,
+            "status": new_status,
+            "visibility": "shared"
+        }
+    })
+    
+    return {"message": f"Event {'submitted for approval' if require_approval else 'shared'} successfully."}, 200
 
 def srv_mark_student_attendance(event_id, current_user):
     db = get_db()

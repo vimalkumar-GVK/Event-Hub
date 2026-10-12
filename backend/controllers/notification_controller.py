@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from services.notification_service import srv_get_notifications, srv_mark_notification_read
+from services.notification_service import srv_get_notifications, srv_mark_notification_read, srv_mark_all_read
 from middleware.auth import require_auth
 
 @require_auth
@@ -12,6 +12,12 @@ def get_notifications():
 def mark_notification_read(notification_id):
     current_user = request.user
     result, status = srv_mark_notification_read(notification_id, current_user)
+    return jsonify(result), status
+
+@require_auth
+def mark_all_notifications_read():
+    current_user = request.user
+    result, status = srv_mark_all_read(current_user)
     return jsonify(result), status
 
 @require_auth

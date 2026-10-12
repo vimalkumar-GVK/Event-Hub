@@ -69,6 +69,13 @@ export const NotificationBell = () => {
     },
   });
 
+  const markAllReadMut = useMutation({
+    mutationFn: () => authedPut(`${API}/notifications/read-all`, token!),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const handleNotificationClick = async (notif: any) => {
@@ -109,11 +116,21 @@ export const NotificationBell = () => {
           >
             <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
               <h3 className="font-bold text-slate-800 dark:text-white">Notifications</h3>
-              {unreadCount > 0 && (
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">
-                  {unreadCount} new
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {unreadCount > 0 && (
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">
+                    {unreadCount} new
+                  </span>
+                )}
+                {unreadCount > 0 && (
+                  <button 
+                    onClick={() => markAllReadMut.mutate()}
+                    className="text-[10px] font-bold text-blue-500 hover:text-blue-700 uppercase tracking-wide cursor-pointer"
+                  >
+                    Mark all as read
+                  </button>
+                )}
+              </div>
             </div>
             
             <div className="max-h-96 overflow-y-auto">

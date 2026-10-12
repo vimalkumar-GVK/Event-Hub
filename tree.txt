@@ -1,0 +1,186 @@
+├── Event-Hub/
+│   ├── .env.example
+│   ├── docker-compose.dev.yml
+│   ├── generate_tree.py
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── run_python_backend.bat
+│   ├── tree.txt
+│   ├── vercel.json
+│   ├── api/
+│   │   ├── index.py
+│   ├── backend/
+│   │   ├── .coverage
+│   │   ├── .env
+│   │   ├── .env.example
+│   │   ├── app.py
+│   │   ├── approve.py
+│   │   ├── check_db.py
+│   │   ├── create_super_admin.py
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── list_users.py
+│   │   ├── requirements.txt
+│   │   ├── reset_all_passwords.py
+│   │   ├── reset_student_pwd.py
+│   │   ├── test_all_logins.py
+│   │   ├── test_api_auth.py
+│   │   ├── test_login_again.py
+│   │   ├── test_reset.py
+│   │   ├── update_admin.py
+│   │   ├── users_list.txt
+│   │   ├── config/
+│   │   │   ├── config.py
+│   │   ├── controllers/
+│   │   │   ├── auth_controller.py
+│   │   │   ├── certificate_controller.py
+│   │   │   ├── event_controller.py
+│   │   │   ├── institution_controller.py
+│   │   │   ├── notification_controller.py
+│   │   │   ├── post_controller.py
+│   │   │   ├── registration_controller.py
+│   │   │   ├── stats_controller.py
+│   │   │   ├── story_controller.py
+│   │   │   ├── user_controller.py
+│   │   ├── database/
+│   │   │   ├── connection.py
+│   │   │   ├── manage.py
+│   │   │   ├── __init__.py
+│   │   ├── middleware/
+│   │   │   ├── auth.py
+│   │   ├── models/
+│   │   │   ├── schemas.py
+│   │   ├── routes/
+│   │   │   ├── auth_routes.py
+│   │   │   ├── certificate_routes.py
+│   │   │   ├── chat_routes.py
+│   │   │   ├── event_routes.py
+│   │   │   ├── institution_routes.py
+│   │   │   ├── notification_routes.py
+│   │   │   ├── post_routes.py
+│   │   │   ├── registration_routes.py
+│   │   │   ├── stats_routes.py
+│   │   │   ├── story_routes.py
+│   │   │   ├── user_routes.py
+│   │   ├── services/
+│   │   │   ├── auth_service.py
+│   │   │   ├── background_jobs.py
+│   │   │   ├── certificate_engine.py
+│   │   │   ├── email_service.py
+│   │   │   ├── event_service.py
+│   │   │   ├── institution_service.py
+│   │   │   ├── notification_service.py
+│   │   │   ├── post_service.py
+│   │   │   ├── registration_service.py
+│   │   │   ├── stats_service.py
+│   │   │   ├── story_service.py
+│   │   │   ├── user_service.py
+│   │   ├── static/
+│   │   │   ├── uploads/
+│   │   │   │   ├── chat/
+│   │   ├── uploads/
+│   │   │   ├── 86a199a0ae9b474da5205b7ba6f0e666_Vishal.R_RCAS2024BIT023.MOV
+│   │   │   ├── 9327a006e3e34d0782c7fbd57ad33a36_Vishal.R_RCAS2024BIT023.MOV
+│   │   │   ├── c9cdc75fb4ba4268a7281045ac0ef593_unnamed.jpg
+│   │   │   ├── certificates/
+│   │   │   │   ├── 07298ed8_Screenshot_2024-10-06-08-27-57-02_40deb401b9ffe8e1df2f1cc5ba480b12.jpg
+│   │   │   │   ├── 2c65c533_Screenshot_2024-10-06-08-27-57-02_40deb401b9ffe8e1df2f1cc5ba480b12.jpg
+│   │   │   │   ├── 68b146fb_pexels-zhangkaiyv-1168940.jpg
+│   │   │   │   ├── eba8ad02_Screenshot_2024-10-06-08-27-57-02_40deb401b9ffe8e1df2f1cc5ba480b12.jpg
+│   │   │   ├── templates/
+│   │   │   │   ├── 2527f1bf_VIMAL_KUMAR_Internship_Certificate.png
+│   │   │   │   ├── 35acf580_VIMAL_KUMAR_Internship_Certificate.png
+│   │   │   │   ├── 86461407_VIMAL_KUMAR_Internship_Certificate.png
+│   │   ├── utils/
+│   │   │   ├── jwt.py
+│   │   │   ├── websocket_manager.py
+│   ├── frontend/
+│   │   ├── .env.example
+│   │   ├── .gitignore
+│   │   ├── bun.lock
+│   │   ├── docker-compose.yml
+│   │   ├── Dockerfile
+│   │   ├── eslint.config.js
+│   │   ├── Event Icon.png
+│   │   ├── index.html
+│   │   ├── nginx.conf
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── postcss.config.js
+│   │   ├── README.md
+│   │   ├── tailwind.config.js
+│   │   ├── tsconfig.app.json
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.node.json
+│   │   ├── vite.config.ts
+│   │   ├── public/
+│   │   │   ├── favicon.svg
+│   │   │   ├── icons.svg
+│   │   │   ├── landing.html
+│   │   ├── src/
+│   │   │   ├── App.css
+│   │   │   ├── App.tsx
+│   │   │   ├── index.css
+│   │   │   ├── main.tsx
+│   │   │   ├── assets/
+│   │   │   │   ├── hero.png
+│   │   │   │   ├── react.svg
+│   │   │   │   ├── vite.svg
+│   │   │   ├── components/
+│   │   │   │   ├── admin/
+│   │   │   │   │   ├── CreateSubAdminModal.tsx
+│   │   │   │   ├── auth/
+│   │   │   │   │   ├── ForgotPasswordModal.tsx
+│   │   │   │   ├── events/
+│   │   │   │   │   ├── EventDetailsModal.tsx
+│   │   │   │   │   ├── EventRegistrationModal.tsx
+│   │   │   │   │   ├── RegisteredEventDetailsModal.tsx
+│   │   │   │   │   ├── ShareEventModal.tsx
+│   │   │   │   ├── layout/
+│   │   │   │   │   ├── ProtectedRoute.tsx
+│   │   │   │   ├── ui/
+│   │   │   │   │   ├── NotificationBell.tsx
+│   │   │   │   │   ├── QRScanner.tsx
+│   │   │   │   │   ├── QRScannerModal.tsx
+│   │   │   │   │   ├── SocialFeed.tsx
+│   │   │   ├── context/
+│   │   │   │   ├── authStore.ts
+│   │   │   │   ├── chatStore.ts
+│   │   │   ├── hooks/
+│   │   │   │   ├── useLiveData.ts
+│   │   │   │   ├── useOnlineStatus.ts
+│   │   │   │   ├── useTheme.ts
+│   │   │   │   ├── useWebSocket.ts
+│   │   │   ├── pages/
+│   │   │   │   ├── Landing.tsx
+│   │   │   │   ├── Login.tsx
+│   │   │   │   ├── Register.tsx
+│   │   │   │   ├── admin/
+│   │   │   │   │   ├── Dashboard.tsx
+│   │   │   │   ├── public/
+│   │   │   │   │   ├── VerifyCertificate.tsx
+│   │   │   │   ├── shared/
+│   │   │   │   │   ├── Messages.tsx
+│   │   │   │   │   ├── Profile.tsx
+│   │   │   │   │   ├── Registrations.tsx
+│   │   │   │   │   ├── Settings.tsx
+│   │   │   │   ├── student/
+│   │   │   │   │   ├── CheckIn.tsx
+│   │   │   │   │   ├── Dashboard.tsx
+│   │   │   │   │   ├── MyCertificates.tsx
+│   │   │   │   ├── subadmin/
+│   │   │   │   │   ├── Attendance.tsx
+│   │   │   │   │   ├── Certificates.tsx
+│   │   │   │   │   ├── CertificateTemplates.tsx
+│   │   │   │   │   ├── Dashboard.tsx
+│   │   │   │   │   ├── TemplateDesigner.tsx
+│   │   │   │   │   ├── Users.tsx
+│   │   │   │   ├── superadmin/
+│   │   │   │   │   ├── Dashboard.tsx
+│   │   │   ├── services/
+│   │   │   │   ├── auth.ts
+│   │   │   │   ├── client.ts
+│   │   │   │   ├── institutions.ts
+│   │   │   │   ├── users.ts
+│   │   │   ├── types/
+│   │   │   │   ├── user.ts

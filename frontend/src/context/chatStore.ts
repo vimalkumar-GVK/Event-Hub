@@ -47,7 +47,9 @@ interface ChatState {
   sendAction: (action: 'react' | 'unsend' | 'forward', msgId: string, data?: any) => void;
 }
 
-const WS_URL = (import.meta.env.VITE_API_URL ?? '').replace('http', 'ws');
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const host = import.meta.env.VITE_API_URL ? new URL(import.meta.env.VITE_API_URL).host : window.location.host;
+const WS_URL = `${protocol}//${host}`;
 
 export const useChatStore = create<ChatState>((set, get) => ({
   conversations: [],
@@ -115,11 +117,20 @@ export const useChatStore = create<ChatState>((set, get) => ({
           const updatedMsg = payload.message;
           set((state) => {
             const msgs = state.messages[updatedMsg.conversation_id] || [];
+            
+            const updatedConvs = state.conversations.map(c => {
+              if (c.id === updatedMsg.conversation_id && c.last_message?.id === updatedMsg.id) {
+                return { ...c, last_message: updatedMsg };
+              }
+              return c;
+            });
+
             return {
               messages: { 
                 ...state.messages, 
                 [updatedMsg.conversation_id]: msgs.map(m => m.id === updatedMsg.id ? updatedMsg : m) 
-              }
+              },
+              conversations: updatedConvs
             };
           });
         }

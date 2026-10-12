@@ -98,7 +98,7 @@ const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => vo
 
         <div className="p-4 border-t border-white/10">
           <button
-            onClick={() => { logout(); navigate('/login'); }}
+            onClick={() => { logout(); navigate('/login', { replace: true }); }}
             className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-400
               hover:bg-red-500/10 hover:text-red-300 rounded-xl transition-all"
           >
@@ -686,7 +686,7 @@ const SubAdminDashboard = () => {
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
       <div className="md:ml-64">
-        <header className="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={() => setSidebarOpen(true)} className="md:hidden text-slate-500 hover:text-slate-700">
               <Menu size={22} />

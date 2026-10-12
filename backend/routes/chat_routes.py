@@ -21,39 +21,50 @@ except OSError:
 @chat_bp.route("/api/chat/users", methods=["GET"])
 @require_auth
 def search_users():
-    """Globally search for users by name, email, or id"""
+    """Get users from the same institution or globally search"""
     current_user = request.user
     db = get_db()
     query = request.args.get("search", "").strip()
     
-    if not query:
-        return jsonify([]), 200
-
-    # Avoid DB overload by limiting results
-    db_query = {
-        "$and": [
-            {"_id": {"$ne": current_user["_id"]}},
-            {"$or": [
-                {"name": {"$regex": query, "$options": "i"}},
-                {"email": {"$regex": query, "$options": "i"}}
-            ]}
-        ]
-    }
+    # Base query: Always exclude current user
+    db_query = {"_id": {"$ne": current_user["_id"]}}
     
-    # If the query is exactly 24 chars hex, they might be searching by ID directly
-    if len(query) == 24:
-        try:
-            db_query["$or"].append({"_id": ObjectId(query)})
-        except:
-            pass
-            
-    users = list(db.users.find(db_query, {"password": 0}).limit(20))
+    # Filter by institution_id if the user belongs to one
+    # If the user is SUPER_ADMIN, they might not have an institution_id, so they see everyone
+    if current_user.get("institution_id") and current_user.get("role") != "SUPER_ADMIN":
+        db_query["institution_id"] = current_user["institution_id"]
+        # If college_id is a thing, we can filter by it too. For now, institution_id is the primary isolation.
+        if current_user.get("college_id"):
+             db_query["college_id"] = current_user["college_id"]
+
+    if query:
+        search_or = [
+            {"name": {"$regex": query, "$options": "i"}},
+            {"email": {"$regex": query, "$options": "i"}},
+            {"role": {"$regex": query, "$options": "i"}}
+        ]
+        # If the query is exactly 24 chars hex, they might be searching by ID directly
+        if len(query) == 24:
+            try:
+                search_or.append({"_id": ObjectId(query)})
+            except:
+                pass
+        db_query["$and"] = [{"$or": search_or}]
+
+    users = list(db.users.find(db_query, {"password": 0}).limit(50))
+    
+    # Let's get online users from the websocket manager
+    import utils.websocket_manager as ws_manager
+    online_users = ws_manager.manager.connected_users.keys()
     
     res = []
     for u in users:
         u["id"] = str(u.pop("_id"))
         if "institution_id" in u and u["institution_id"]:
             u["institution_id"] = str(u["institution_id"])
+        # Format avatar and isOnline as requested by the frontend
+        u["avatar"] = u.get("profile_photo", "")
+        u["isOnline"] = u["id"] in online_users
         res.append(u)
         
     return jsonify(res), 200

@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from middleware.auth import require_sub_admin, require_admin, require_auth, require_student
-from services.event_service import srv_get_events, srv_get_public_events, srv_create_event, srv_update_event, srv_delete_event, srv_get_pending_events, srv_approve_event, srv_mark_student_attendance, srv_get_my_events, srv_get_event_by_id, srv_approve_event_deletion
+from services.event_service import srv_get_events, srv_get_public_events, srv_create_event, srv_update_event, srv_delete_event, srv_get_pending_events, srv_approve_event, srv_mark_student_attendance, srv_get_my_events, srv_get_event_by_id, srv_approve_event_deletion, srv_get_approval_history
 
 def get_events():
     auth_header = request.headers.get("Authorization")
@@ -51,6 +51,12 @@ def get_pending_events():
     return jsonify(result), status
 
 @require_admin
+def get_approval_history():
+    current_user = request.user
+    result, status = srv_get_approval_history(current_user)
+    return jsonify(result), status
+
+@require_admin
 def approve_event(event_id):
     current_user = request.user
     result, status = srv_approve_event(event_id, current_user)
@@ -60,6 +66,14 @@ def approve_event(event_id):
 def approve_event_deletion(event_id):
     current_user = request.user
     result, status = srv_approve_event_deletion(event_id, current_user)
+    return jsonify(result), status
+
+@require_auth
+def share_event(event_id):
+    current_user = request.user
+    share_data = request.json
+    from services.event_service import srv_share_event
+    result, status = srv_share_event(event_id, current_user, share_data)
     return jsonify(result), status
 
 import time

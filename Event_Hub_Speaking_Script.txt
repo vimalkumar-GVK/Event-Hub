@@ -1,0 +1,68 @@
+[0:00 - 0:45] Introduction
+[Show Slide 1]
+Hello everyone! Today I'm going to walk you through my project, Event Hub. If you’ve ever tried to organize, volunteer for, or even just attend a college event, you know exactly how messy the administration side can get. My name is [Your Name], and for this project, I stepped into the shoes of a Full-Stack Web Developer to design and build a complete, all-in-one Smart Campus Event Management Platform. 
+
+I built this project solo because I wanted to directly tackle a problem I face on campus all the time. Our college events are amazing, but the management—from tracking ticket sales to handing out certificates—is completely broken. Let me show you how Event Hub fixes that.
+
+[0:45 - 1:45] Problem & Objective
+[Show Slide 2]
+So, what exactly is the real-world problem here? Right now, if a department hosts a hackathon or a cultural fest, they usually just send out a Google Form link on WhatsApp. Students register there, but then there's no central place for organizers to track those registrations. On the day of the event, attendance is usually taken on paper. This means long queues, and people can easily fake it or do proxy check-ins for their friends. And worst of all, after the event, organizers have to manually type out names, create certificates one by one, and email them, which can take weeks. [Pause]
+
+[Show Slide 3]
+Our objective with Event Hub is simple: we want to digitize this entire lifecycle from start to finish. We want to bring students, organizers, and college administrators under one unified, secure roof. We’re replacing paper attendance with instant, foolproof QR code check-ins, and we’re completely automating the certificate distribution process so students get verifiable PDFs immediately after the event ends.
+
+[Show Slide 4]
+As you can see in this comparison table, we are moving away from a fragmented, manual system. No more messy spreadsheets and WhatsApp groups. Instead, we provide a centralized, instant, and automated digital platform. 
+
+[1:45 - 3:15] Tech Stack & Architecture
+[Show Slide 5]
+Now, let's talk about the engineering behind this. For the tech stack, I carefully selected tools that provide high performance, scalability, and a great developer experience. 
+
+On the frontend, I used React 19 and TypeScript. I chose Vite as the build tool for lightning-fast hot module replacement, and styled the entire application using Tailwind CSS to achieve a modern, minimal, and responsive look without writing thousands of lines of custom CSS. 
+
+For the backend, I used Python with Flask. I intentionally paired this with a MongoDB database. Since events can have wildly different structures—some are team events, some are solo, some have multiple sub-competitions—MongoDB's flexible document-based structure was perfect for handling this dynamic data. 
+
+I also wanted the platform to feel alive, so I implemented WebSockets using Flask-Sock to create a real-time chat feature between students and organizers. Finally, the whole system is secured using JWT authentication. [Pause]
+
+[Show Slide 6]
+Let’s look at the system architecture. [Point to diagram flow] 
+Here’s how data flows through our ecosystem. It starts when a college Administrator approves an event proposed by a student Organizer. Once approved, the event instantly goes live on the student Web App. 
+
+A student registers, and the React frontend sends that data to our Flask REST APIs, safely storing the registration in MongoDB. The system then generates a unique QR code ticket and assigns it to the student. When the organizer scans that ticket at the venue, the API updates the database in real-time, marking them present. Finally, the backend Python script utilizes ReportLab to generate a PDF certificate and pushes it straight to the student's dashboard.
+
+[3:15 - 5:45] Live Walkthrough / How it works (Tutorial part)
+[Show Slide 7]
+Alright, let’s get into the fun part—how it actually works in practice! Let's do a quick walkthrough of the core user journey.
+
+Imagine I’m a student. I log into Event Hub and I'm greeted by a beautiful, responsive dashboard feed. It feels like a modern social media app. I can see Instagram-style stories with campus announcements at the top. I find an upcoming Coding Hackathon and click "Register." Because I have a centralized profile, I don't have to fill out my name and college details again—the system already knows who I am. 
+
+If it's a paid event, I can scan the organizer's UPI QR code right there on my screen, make the payment, and upload the screenshot as proof. Once the organizer approves my payment, I instantly get a digital ticket with a unique QR code. I don't need to print anything; I just bring my phone to the venue.
+
+Now, let's switch perspectives. I'm the organizer standing at the door on the day of the Hackathon. I open my Organizer Dashboard on my tablet or smartphone, and navigate to the QR Check-in scanner. [Pause and gesture as if holding a scanner] 
+
+You walk up, I point my camera at your ticket, and *beep*—in less than a second, the system validates your ticket against our MongoDB database and marks you as Present. The UI updates instantly. No more flipping through paper lists or arguing about who paid!
+
+During the event, if attendees have questions, they can use the built-in real-time chat to message the organizers directly. 
+
+Finally, after the event wraps up, I go to the Certificate Studio. This is a custom drag-and-drop interface I built. I upload a blank certificate background image, and visually drag placeholders for "Student Name" and "Event Name" exactly where I want them. I click "Generate", and boom! Hundreds of personalized PDF certificates are generated automatically on the backend and sent directly to the dashboard of every attendee who was marked present. 
+
+[5:45 - 7:00] Results & Challenges
+[Show Slide 8]
+The results of implementing this system have been fantastic, but it wasn't without its challenges. 
+
+One major challenge I faced during development was ensuring the QR scanner worked perfectly across all types of mobile devices and lighting conditions. I had to optimize the frontend camera handling and ensure the API response time was extremely low so that a line of 100 students wouldn't be kept waiting.
+
+By optimizing the database queries and the Flask API, we achieved our goal. The user interface is clean, intuitive, and highly responsive. The check-in time dropped from minutes of searching through paper lists down to just 1 or 2 seconds per student. 
+
+And that massive headache of certificate generation? It’s completely gone. What used to take days of manual data entry is now accomplished in a single click, saving organizers countless hours. Because of the robust backend architecture, the system is fully scalable and ready to handle thousands of concurrent students.
+
+[7:00 - 8:00] Conclusion and Future Scope
+[Show Slide 9]
+To conclude, Event Hub successfully takes a chaotic, offline process and turns it into a smooth, premium digital experience. It solves genuine pain points for both the attendees and the organizers, creating a unified smart campus.
+
+Looking to the future, there is still a lot of room to grow. My immediate next step is to integrate a direct payment gateway like Stripe or Razorpay to fully automate ticket purchases and remove the need for manual screenshot verification. 
+
+I also want to add an AI recommendation engine that suggests events to students based on the types of workshops they've attended before. Eventually, I'd love to wrap this web application into a native mobile app for iOS and Android, and introduce gamification—like campus points and leaderboards—to boost student engagement even further!
+
+[Show Slide 10]
+Thank you so much for your time and attention today. I had a lot of fun building Event Hub and pushing my skills as a developer, and I hope you found this walkthrough insightful. I’d be happy to take any questions you might have, and the full source code is available on my GitHub if you're curious to see the implementation.

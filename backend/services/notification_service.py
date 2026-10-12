@@ -105,3 +105,27 @@ def srv_create_notification(text, event_id, sender_name, notif_type="info", targ
     elif target_role:
         manager.send_to_role(target_role, notif, db)
 
+def srv_mark_all_read(current_user):
+    db = get_db()
+    user_id = str(current_user["_id"])
+    role = current_user.get("role")
+    inst_id = current_user.get("institution_id")
+    
+    # Mark targeted notifications
+    db.notifications.update_many(
+        {"target_user_id": user_id, "is_read": False},
+        {"$set": {"is_read": True}}
+    )
+    
+    # Mark role broadcasts
+    query = {
+        "target_role": role,
+        "read_by": {"$ne": user_id},
+        "$or": [
+            {"target_institution": inst_id},
+            {"target_institution": {"$exists": False}}
+        ]
+    }
+    db.notifications.update_many(query, {"$addToSet": {"read_by": user_id}})
+    
+    return {"message": "All marked as read"}, 200

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { XCircle, Edit, Calendar, Clock, MapPin, Users, Award, Info, Save, Trash2, X as CloseIcon, PlusCircle, Plus, ClipboardList, QrCode } from 'lucide-react';
+import { XCircle, Edit, Calendar, Clock, MapPin, Users, Award, Info, Save, Trash2, X as CloseIcon, PlusCircle, Plus, ClipboardList, QrCode, Download } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAuthStore } from '../../context/authStore';
 import toast from 'react-hot-toast';
+import html2pdf from 'html2pdf.js';
 
 const API = (import.meta.env.VITE_API_URL ?? '') + '/api';
 
@@ -64,6 +65,20 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, onC
     updateMut.mutate(form);
   };
 
+  const handleDownloadPdf = () => {
+    const element = document.getElementById('event-details-pdf-content');
+    if (!element) return;
+    const opt = {
+      margin:       0.5,
+      filename:     `${event.title.replace(/[^a-zA-Z0-9]/g, '_')}_details.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    } as any;
+    
+    html2pdf().from(element).set(opt).save();
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 md:p-6 backdrop-blur-sm overflow-y-auto">
       <motion.div 
@@ -101,6 +116,15 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, onC
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all"
                 >
                   <Edit size={16} /> Edit Event
+                </button>
+              )}
+              
+              {!canEdit && (
+                <button 
+                  onClick={handleDownloadPdf}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all"
+                >
+                  <Download size={16} /> Download PDF
                 </button>
               )}
             </div>
@@ -286,8 +310,18 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ event, onC
               </div>
             </form>
           ) : (
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-4 leading-tight">{event.title}</h1>
+            <div id="event-details-pdf-content" className="bg-white dark:bg-slate-900 p-2">
+              <div className="flex justify-between items-start mb-4">
+                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">{event.title}</h1>
+                {canEdit && (
+                  <button 
+                    onClick={handleDownloadPdf}
+                    className="flex-shrink-0 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl font-bold shadow-sm flex items-center gap-2 transition-all"
+                  >
+                    <Download size={16} /> Download
+                  </button>
+                )}
+              </div>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-8">{event.description || 'No description provided.'}</p>
               
               {event.rules && (

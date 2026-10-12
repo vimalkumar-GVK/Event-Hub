@@ -126,7 +126,7 @@ const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => vo
                 </div>
              </div>
              <button
-                onClick={() => { logout(); navigate('/login'); }}
+                onClick={() => { logout(); navigate('/login', { replace: true }); }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-rose-400
                   hover:bg-rose-500/10 hover:text-rose-300 rounded-xl transition-all border border-transparent hover:border-rose-500/10"
               >
@@ -231,9 +231,17 @@ const Badge = ({ label, icon, color }: any) => (
 const PendingEvents = () => {
     const { token } = useAuthStore();
     const qc = useQueryClient();
+    const [activeTab, setActiveTab] = useState<'pending' | 'history'>('pending');
+
     const { data: pending = [], isLoading } = useQuery<any[]>({
         queryKey: ['pending-events'],
         queryFn: () => authedGet(`${API}/events/pending`, token!),
+    });
+
+    const { data: history = [], isLoading: historyLoading } = useQuery<any[]>({
+        queryKey: ['approval-history'],
+        queryFn: () => authedGet(`${API}/events/history`, token!),
+        enabled: activeTab === 'history'
     });
 
     const approveMut = useMutation({
@@ -258,7 +266,25 @@ const PendingEvents = () => {
                 <p className="text-slate-500 dark:text-slate-400 font-medium">Review and publish events or approve deletions submitted by sub-admins.</p>
             </div>
 
-            {isLoading && <p>Loading...</p>}
+            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-px">
+                <button 
+                    onClick={() => setActiveTab('pending')}
+                    className={`pb-3 px-2 border-b-2 font-bold text-sm transition-colors ${activeTab === 'pending' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                >
+                    Pending Approvals
+                </button>
+                <button 
+                    onClick={() => setActiveTab('history')}
+                    className={`pb-3 px-2 border-b-2 font-bold text-sm transition-colors ${activeTab === 'history' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                >
+                    Approval History
+                </button>
+            </div>
+
+            {activeTab === 'pending' ? (
+                <>
+                    {isLoading && <p>Loading...</p>}
+
             
             <div className="space-y-6">
                 <div>
@@ -382,7 +408,48 @@ const PendingEvents = () => {
                     </div>
                 </div>
             </div>
+            </>
+        ) : (
+            <div className="space-y-6">
+                    {historyLoading ? <p>Loading history...</p> : (
+                        history.length === 0 ? <p className="text-sm text-slate-500">No approval history found.</p> : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {history.map((ev: any) => (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                                        key={ev.id} 
+                                        className="glass-card overflow-hidden flex flex-col relative opacity-80 hover:opacity-100 transition-opacity"
+                                    >
+                                        {ev.image && (
+                                            <div className="h-40 w-full bg-slate-100 dark:bg-slate-800">
+                                                <img src={ev.image} alt={ev.title} className="w-full h-full object-cover grayscale opacity-70" />
+                                            </div>
+                                        )}
+                                        <div className="p-6 flex-1 flex flex-col">
+                                            <h3 className="text-lg font-black dark:text-white leading-tight mb-2 line-clamp-2">
+                                                {ev.title}
+                                            </h3>
+                                            <span className="inline-block self-start mb-2 text-[10px] bg-emerald-100 text-emerald-700 px-2 py-1 rounded uppercase font-bold tracking-wider">
+                                                Approved
+                                            </span>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 flex-1">{ev.description}</p>
+                                            
+                                            <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+                                                <Badge label={ev.date} icon={<Clock size={10}/>} color="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"/>
+                                                {ev.approved_at && (
+                                                    <Badge label={new Date(ev.approved_at).toLocaleDateString()} icon={<Award size={10}/>} color="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"/>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )
+                    )}
+                </div>
+            )}
         </div>
+
     );
 };
 
@@ -1061,7 +1128,7 @@ const AdminDashboard = () => {
         <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
   
         <div className="md:ml-64">
-          <header className="sticky top-0 z-20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800/60 px-6 py-5 flex items-center justify-between">
+          <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800/60 px-6 py-5 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button onClick={() => setSidebarOpen(true)} className="md:hidden text-slate-500">
                 <Menu size={22} />

@@ -176,11 +176,16 @@ class EventBase(BaseModel):
     capacity: Optional[int] = None
     type: Optional[str] = None
     image: Optional[str] = None
-    status: str = 'published'
+    status: str = 'published'  # draft, pending_approval, approved, shared, published
     admin_id: Optional[int] = None
     
     institution_id: Optional[int] = None
+    college_id: Optional[int] = None
+    created_by: Optional[int] = None
     created_by_institution: Optional[str] = None
+    
+    visibility: str = 'institution' # public, institution, department, private
+    shared_with: List[Any] = [] # [{role, department, institutionId}]
     
     rules_pdf_url: Optional[str] = None
     payment_qr_url: Optional[str] = None
@@ -242,6 +247,8 @@ class MessageBase(BaseModel):
     text: Optional[str] = Field(None, max_length=2000)
     sender_id: int
     receiver_id: int
+    type: str = 'text' # text, image, file
+    institution_id: Optional[int] = None
     attachment: Optional[Any] = None
 
 class MessageCreate(MessageBase):

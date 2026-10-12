@@ -96,7 +96,7 @@ const Sidebar = ({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => vo
         {/* Logout */}
         <div className="px-3 pb-5 border-t border-white/10 pt-3">
           <button
-            onClick={() => { logout(); navigate('/login'); }}
+            onClick={() => { logout(); navigate('/login', { replace: true }); }}
             className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
           >
             <LogOut size={17} className="shrink-0" />
@@ -115,7 +115,7 @@ const TopBar = ({ onMenuClick }: { onMenuClick: () => void }) => {
   const isOnline = useOnlineStatus();
 
   return (
-    <header className="h-14 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-600 flex items-center justify-between px-6 shadow-lg shadow-purple-500/20">
+    <header className="sticky top-0 z-50 h-14 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-600 flex items-center justify-between px-6 shadow-lg shadow-purple-500/20">
       <div className="flex items-center gap-4">
         <button
           className="lg:hidden text-white/80 hover:text-white transition-colors"
@@ -137,7 +137,7 @@ const TopBar = ({ onMenuClick }: { onMenuClick: () => void }) => {
           Welcome, {user?.name}
         </span>
         <button
-          onClick={() => { logout(); navigate('/login'); }}
+          onClick={() => { logout(); navigate('/login', { replace: true }); }}
           className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-md transition-all"
         >
           <LogOut size={13} />

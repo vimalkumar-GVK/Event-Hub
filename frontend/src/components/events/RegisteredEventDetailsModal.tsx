@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, MapPin, Clock, Award, Users } from 'lucide-react';
+import { X, Calendar, MapPin, Clock, Award, Users, Download } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 interface Props {
   registration: any;
@@ -34,6 +35,7 @@ export const RegisteredEventDetailsModal = ({ registration, certificate, isOpen,
           onClick={onClose}
         />
         <motion.div
+          id="registered-event-pdf-content"
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -196,6 +198,33 @@ export const RegisteredEventDetailsModal = ({ registration, certificate, isOpen,
                  </a>
               </div>
             )}
+
+            <button 
+              onClick={() => {
+                const element = document.getElementById('registered-event-pdf-content');
+                if (!element) return;
+                
+                // Hide close button temporarily for PDF
+                const closeBtns = element.querySelectorAll('button');
+                closeBtns.forEach(btn => { if(btn.innerHTML.includes('lucide-x')) btn.style.display = 'none'; });
+                
+                const opt = {
+                  margin:       0.5,
+                  filename:     `${(event.title || 'Event').replace(/[^a-zA-Z0-9]/g, '_')}_details.pdf`,
+                  image:        { type: 'jpeg', quality: 0.98 },
+                  html2canvas:  { scale: 2, useCORS: true },
+                  jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                } as any;
+                
+                html2pdf().from(element).set(opt).save().then(() => {
+                   // Restore close button
+                   closeBtns.forEach(btn => { if(btn.innerHTML.includes('lucide-x')) btn.style.display = ''; });
+                });
+              }}
+              className="mt-4 w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
+            >
+              <Download size={20} /> Download PDF Details
+            </button>
           </div>
         </motion.div>
       </div>

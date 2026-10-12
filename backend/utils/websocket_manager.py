@@ -168,6 +168,17 @@ def init_websockets(app):
                                     elif action == "unsend" and msg.get("sender_id") == user_id:
                                         db.messages.update_one({"_id": ObjectId(msg_id)}, {"$set": {"content": "This message was unsent", "type": "unsent", "reaction": None}})
                                         
+                                        # If this was the last message, update the conversation's last_message object
+                                        if conv.get("last_message", {}).get("id") == msg_id:
+                                            db.conversations.update_one(
+                                                {"_id": ObjectId(conv_id)},
+                                                {"$set": {
+                                                    "last_message.content": "This message was unsent",
+                                                    "last_message.type": "unsent",
+                                                    "last_message.reaction": None
+                                                }}
+                                            )
+                                        
                                     # Broadcast updated message
                                     updated_msg = db.messages.find_one({"_id": ObjectId(msg_id)})
                                     updated_msg["id"] = str(updated_msg.pop("_id"))
